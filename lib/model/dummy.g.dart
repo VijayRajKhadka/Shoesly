@@ -8,7 +8,7 @@ part of 'dummy.dart';
 
 _$DummyImpl _$$DummyImplFromJson(Map<String, dynamic> json) => _$DummyImpl(
       id: (json['id'] as num?)?.toInt(),
-      name: json['name'] as String?,
+      name: json['first_name'] as String?,
       location: json['location'] as String?,
       age: (json['age'] as num?)?.toInt(),
     );
@@ -16,7 +16,7 @@ _$DummyImpl _$$DummyImplFromJson(Map<String, dynamic> json) => _$DummyImpl(
 Map<String, dynamic> _$$DummyImplToJson(_$DummyImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'name': instance.name,
+      'first_name': instance.name,
       'location': instance.location,
       'age': instance.age,
     };

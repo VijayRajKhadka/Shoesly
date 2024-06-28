@@ -21,6 +21,7 @@ Dummy _$DummyFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Dummy {
   int? get id => throw _privateConstructorUsedError;
+  @JsonKey(name: "first_name")
   String? get name => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   int? get age => throw _privateConstructorUsedError;
@@ -35,7 +36,11 @@ abstract class $DummyCopyWith<$Res> {
   factory $DummyCopyWith(Dummy value, $Res Function(Dummy) then) =
       _$DummyCopyWithImpl<$Res, Dummy>;
   @useResult
-  $Res call({int? id, String? name, String? location, int? age});
+  $Res call(
+      {int? id,
+      @JsonKey(name: "first_name") String? name,
+      String? location,
+      int? age});
 }
 
 /// @nodoc
@@ -84,7 +89,11 @@ abstract class _$$DummyImplCopyWith<$Res> implements $DummyCopyWith<$Res> {
       __$$DummyImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? id, String? name, String? location, int? age});
+  $Res call(
+      {int? id,
+      @JsonKey(name: "first_name") String? name,
+      String? location,
+      int? age});
 }
 
 /// @nodoc
@@ -128,7 +137,11 @@ class __$$DummyImplCopyWithImpl<$Res>
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _$DummyImpl implements _Dummy {
-  const _$DummyImpl({this.id, this.name, this.location, this.age});
+  const _$DummyImpl(
+      {this.id,
+      @JsonKey(name: "first_name") this.name,
+      this.location,
+      this.age});
 
   factory _$DummyImpl.fromJson(Map<String, dynamic> json) =>
       _$$DummyImplFromJson(json);
@@ -136,6 +149,7 @@ class _$DummyImpl implements _Dummy {
   @override
   final int? id;
   @override
+  @JsonKey(name: "first_name")
   final String? name;
   @override
   final String? location;
@@ -180,7 +194,7 @@ class _$DummyImpl implements _Dummy {
 abstract class _Dummy implements Dummy {
   const factory _Dummy(
       {final int? id,
-      final String? name,
+      @JsonKey(name: "first_name") final String? name,
       final String? location,
       final int? age}) = _$DummyImpl;
 
@@ -189,6 +203,7 @@ abstract class _Dummy implements Dummy {
   @override
   int? get id;
   @override
+  @JsonKey(name: "first_name")
   String? get name;
   @override
   String? get location;
