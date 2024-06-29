@@ -31,7 +31,12 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-   goToProduct(){
+   void goToProduct(){
     _navigationService.navigateToProductView();
+   }
+
+   void goToCart(){
+     _navigationService.navigateToCartView();
+
    }
 }

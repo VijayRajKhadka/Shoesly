@@ -32,10 +32,13 @@ class HomeView extends StackedView<HomeViewModel> {
                           "Discover",
                           style: TextStyle(fontSize: 31, fontWeight: FontWeight.bold),
                         ),
-                        Image.asset(
-                          "assets/icons/cart_icon.png",
-                          width: screenWidth * 0.1,
-                          height: screenHeight * 0.033,
+                        InkWell(
+                          onTap: viewModel.goToCart,
+                          child: Image.asset(
+                            "assets/icons/cart_icon.png",
+                            width: screenWidth * 0.1,
+                            height: screenHeight * 0.033,
+                          ),
                         ),
                       ],
                     ),

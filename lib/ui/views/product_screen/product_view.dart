@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
 import 'package:shoesly/ui/views/product_screen/product_view_model.dart';
+import 'package:shoesly/ui/widgets/add_to_cart_bottom_sheet.dart';
+import 'package:shoesly/ui/widgets/cart_added_bottom_sheet.dart';
 import 'package:shoesly/ui/widgets/reviews_card.dart';
 import 'package:stacked/stacked.dart';
 
@@ -198,13 +200,26 @@ class ProductView extends StackedView<ProductViewModel>{
                        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
                      ),
                      ElevatedButton(
-                       onLongPress: (){
-                         print("ok");
-                       },
-                       onPressed: () {
-                         print("Hello");
+                       onPressed: () async {
+                         // Show modal bottom sheet and wait for it to complete
+                         var result = await showModalBottomSheet(
+                           context: context,
+                           builder: (BuildContext context) {
+                             return AddToCartBottomSheet(price: 235.00);
+                           },
+                         );
 
-                       viewModel.addToCart;},
+                         if (result != null) {
+                           print(viewModel.selectedColor);
+                           print(viewModel.selectedSize);
+                           print('Result from bottom sheet: $result');
+                           showModalBottomSheet(
+                             context: context,
+                             builder: (BuildContext context) {
+                               return CartAddedBottomSheet(qty: result['quantity']);
+                             },
+                           );                         }
+                       },
                        style: ElevatedButton.styleFrom(
                          backgroundColor: Colors.black,
                          elevation: 0,
