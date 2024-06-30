@@ -4,12 +4,13 @@ class TopScrollingNavbar extends StatelessWidget {
   final String headingText;
   final bool isSelected;
   final VoidCallback onTap;
+  final double fontSize;
 
   const TopScrollingNavbar({
     Key? key,
     required this.headingText,
     required this.isSelected,
-    required this.onTap,
+    required this.onTap, required this.fontSize,
   }) : super(key: key);
 
   @override
@@ -21,7 +22,7 @@ class TopScrollingNavbar extends StatelessWidget {
         headingText,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 26,
+          fontSize: fontSize,
           color: isSelected ? Colors.black : Colors.grey,
         ),
       ),

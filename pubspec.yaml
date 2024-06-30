@@ -61,8 +61,8 @@ dependencies:
   #cache Image
   url_launcher: ^6.2.5
   image_picker: ^1.0.8
-  firebase_core: ^2.29.0
-  firebase_messaging: ^14.8.1
+  firebase_core: ^3.1.1
+  cloud_firestore: ^5.0.2
   awesome_notifications: ^0.9.3+1
   freezed_annotation: ^2.4.1
   json_annotation: ^4.9.0

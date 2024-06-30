@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
 import 'package:shoesly/ui/views/filter_screen/filter_view_model.dart';
+import 'package:shoesly/ui/widgets/filter_brand.dart';
+import 'package:shoesly/ui/widgets/sort_by_button.dart';
+import 'package:shoesly/ui/widgets/sort_by_color.dart';
 import 'package:stacked/stacked.dart';
 
 class FilterView extends  StackedView<FilterViewModel>{
@@ -8,130 +11,265 @@ class FilterView extends  StackedView<FilterViewModel>{
 
   @override
   Widget builder(BuildContext context, FilterViewModel viewModel, Widget? child) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     // TODO: implement builder
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
+        backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text("Filter", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        title: const Text("Filter", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Brands
-            Text('Brands'),
-          Wrap(
-            spacing: 10,
+      body: Stack(
+        
+        children:[ Container(
+          height: screenHeight*1,
+          padding: EdgeInsets.all(20),
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AssetsHelper.jordanImage,
-              'Puma',
-              'Adidas',
-              'Reebok'
-            ].map((brand) {
-              bool isSelected = viewModel.selectedBrand == brand;
+              // Brands
+              Text('Brands', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+              SizedBox(height: 30),
 
-              return Column(
+              // Brand selection
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    FilterBrand(
+                      image: AssetsHelper.nikeLogo,
+                      brandName: 'Nike',
+                      itemCount: 1023, // Replace with actual item count
+                      isSelected: viewModel.selectedBrand == 'Nike', // Adjust based on your logic
+                      onTap: () => viewModel.setSelectedBrand('Nike'), // Adjust based on your view model method
+                    ),
+                    FilterBrand(
+                      image: AssetsHelper.pumaLogo,
+                      brandName: 'Puma',
+                      itemCount: 950, // Replace with actual item count
+                      isSelected: viewModel.selectedBrand == 'Puma', // Adjust based on your logic
+                      onTap: () => viewModel.setSelectedBrand('Puma'), // Adjust based on your view model method
+                    ),
+                    FilterBrand(
+                      image: AssetsHelper.adidasLogo,
+                      brandName: 'Adidas',
+                      itemCount: 1200, // Replace with actual item count
+                      isSelected: viewModel.selectedBrand == 'Adidas', // Adjust based on your logic
+                      onTap: () => viewModel.setSelectedBrand('Adidas'), // Adjust based on your view model method
+                    ),
+                    FilterBrand(
+                      image: AssetsHelper.reebokLogo,
+                      brandName: 'Reebok',
+                      itemCount: 800, // Replace with actual item count
+                      isSelected: viewModel.selectedBrand == 'Reebok', // Adjust based on your logic
+                      onTap: () => viewModel.setSelectedBrand('Reebok'), // Adjust based on your view model method
+                    ),
+                    FilterBrand(
+                      image: AssetsHelper.jordanLogo,
+                      brandName: 'Jordan',
+                      itemCount: 700, // Replace with actual item count
+                      isSelected: viewModel.selectedBrand == 'Jordan', // Adjust based on your logic
+                      onTap: () => viewModel.setSelectedBrand('Jordan'), // Adjust based on your view model method
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 30),
+
+              // Price Range
+              Text('Price Range', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+              RangeSlider(
+                values: RangeValues(viewModel.minPrice, viewModel.maxPrice),
+                min: 0,
+                max: 1750,
+                divisions: 35,
+                labels: RangeLabels(
+                  '\$${viewModel.minPrice.round()}',
+                  '\$${viewModel.maxPrice.round()}',
+                ),
+                activeColor: Colors.black,
+                inactiveColor: Colors.black12,
+                onChanged: (values) => viewModel.setPriceRange(values.start, values.end),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("\$0"),
+                    Text('\$${viewModel.minPrice.round()}', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('\$${viewModel.maxPrice.round()}', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("\$1750"),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 30),
+
+              // Sort By
+              const Text('Sort By', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+              const SizedBox(height: 25),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SortByButton(
+                      selected: viewModel.sortBy == 'Most recent',
+                      buttonFunction: () => viewModel.setSortBy('Most recent'),
+                      buttonText: 'Most recent',
+                    ),
+                    const SizedBox(width: 10),
+                    SortByButton(
+                      selected: viewModel.sortBy == 'Lowest Price',
+                      buttonFunction: () => viewModel.setSortBy('Lowest Price'),
+                      buttonText: 'Lowest Price',
+                    ),
+                    const SizedBox(width: 10),
+                    SortByButton(
+                      selected: viewModel.sortBy == 'Highest Price',
+                      buttonFunction: () => viewModel.setSortBy('Highest Price'),
+                      buttonText: 'Highest Price',
+                    ),
+                    const SizedBox(width: 10),
+                    SortByButton(
+                      selected: viewModel.sortBy == 'High Rating',
+                      buttonFunction: () => viewModel.setSortBy('High Rating'),
+                      buttonText: 'High Rating',
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Gender
+              const Text('Gender', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+              const SizedBox(height: 20),
+              Row(
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      InkWell(
-                          onTap: () => viewModel.setSelectedBrand(brand),
-
-                        child: CircleAvatar(
-                          radius: 30, // Adjust size as needed
-                          backgroundColor: isSelected ? Colors.green : Colors.grey,
-                          backgroundImage: AssetImage(brand),
-                          child: brand is String
-                              ? Text(
-                            brand.substring(0, 1), // Display first letter of brand
-                            style: TextStyle(color: Colors.white),
-                          )
-                              : null,
-                        ),
-                      ),
-                      if (isSelected)
-                        Positioned(
-                          bottom: -8,
-                          right: -8,
-                          child: Container(
-                            padding: EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                            ),
-                            child: Icon(Icons.check, size: 16, color: Colors.green),
-                          ),
-                        ),
-                    ],
+                  SortByButton(
+                    selected: viewModel.gender == 'Man',
+                    buttonFunction: () => viewModel.setGender('Man'),
+                    buttonText: 'Man',
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    brand is String ? brand : '', // Display brand name if it's a string
-                    textAlign: TextAlign.center,
+                  const SizedBox(width: 10),
+                  SortByButton(
+                    selected: viewModel.gender == 'Women',
+                    buttonFunction: () => viewModel.setGender('Women'),
+                    buttonText: 'Women',
+                  ),
+                  const SizedBox(width: 10),
+                  SortByButton(
+                    selected: viewModel.gender == 'Unisex',
+                    buttonFunction: () => viewModel.setGender('Unisex'),
+                    buttonText: 'Unisex',
                   ),
                 ],
-              );
-            }).toList(),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Color
+              const Text('Color', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+              const SizedBox(height: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SortByColor(
+                      selected: viewModel.colorBy == Colors.white,
+                      buttonFunction: () => viewModel.setSortColor('White'),
+                      colorText: 'White',
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10),
+                    SortByColor(
+                      selected: viewModel.colorBy == Colors.black,
+                      buttonFunction: () => viewModel.setSortColor('Black'),
+                      colorText: 'Black',
+                      color: Colors.black,
+                    ),
+                    const SizedBox(width: 10),
+                    SortByColor(
+                      selected: viewModel.colorBy == Colors.green,
+                      buttonFunction: () => viewModel.setSortColor('Green'),
+                      colorText: 'Green',
+                      color: Colors.green,
+                    ),
+                    const SizedBox(width: 10),
+                    SortByColor(
+                      selected: viewModel.colorBy == Colors.blue,
+                      buttonFunction: () => viewModel.setSortColor('Blue'),
+                      colorText: 'Blue',
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Reset and Apply buttons
+
+            ],
           ),
-
-
-
-            SizedBox(height: 30),
-
-            // Price Range
-            Text('Price Range', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-            Column(
-              children: [
-                RangeSlider(
-                  values: RangeValues(viewModel.minPrice, viewModel.maxPrice),
-                  min: 0,
-                  max: 1750,
-                  divisions: 35,
-                  labels: RangeLabels(
-                    '\$${viewModel.minPrice.round()}',
-                    '\$${viewModel.maxPrice.round()}',
-                  ),
-                  activeColor: Colors.black,
-                  inactiveColor: Colors.grey,
-
-                  onChanged: (values) => viewModel.setPriceRange(values.start, values.end),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("\$0"),
-                      Text('\$${viewModel.minPrice.round()}', style: TextStyle(fontWeight: FontWeight.bold),), // Display min value
-                      Text('\$${viewModel.maxPrice.round()}', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text("\$1750"),// Display max value
-                    ],
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 20,
+          child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.4,
+              height: screenHeight * 0.06,
+              child: ElevatedButton(
+                onPressed: viewModel.resetFilters,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    side: BorderSide(color: Colors.grey),
                   ),
                 ),
-              ],
+                child: Text(
+                  "RESET (4)",
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-
-            SizedBox(height: 16),
-
-            // Sort By
-            Text('Sort By'),
-
-            SizedBox(height: 16),
-
-            // Gender
-            Text('Gender'),
-
-            SizedBox(height: 16),
-
-            // Color
-            Text('Color'),
-            
+            SizedBox(
+              width: screenWidth * 0.4,
+              height: screenHeight * 0.06,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  "APPLY",
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
           ],
         ),
+        ),
+        ]
       ),
     );
+
 
   }
 

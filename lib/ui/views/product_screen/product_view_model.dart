@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shoesly/app/app.locator.dart';
+import 'package:shoesly/app/app.router.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class ProductViewModel extends BaseViewModel {
+  final NavigationService _navigationService = locator<NavigationService>();
   int selectedSize = 41; // Track selected size
   Color? selectedColor = Colors.green; // Track selected color
 
@@ -18,6 +22,7 @@ class ProductViewModel extends BaseViewModel {
   }
 
   void seeAllReviews() {
+     _navigationService.navigateToReviewView();
     print("CART");
 
   }
@@ -26,5 +31,10 @@ class ProductViewModel extends BaseViewModel {
     print("CART");
     print(selectedColor);
     print(selectedSize);
+  }
+
+  void goToCart(){
+    _navigationService.navigateToCartView();
+
   }
 }

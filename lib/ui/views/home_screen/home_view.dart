@@ -51,30 +51,35 @@ class HomeView extends StackedView<HomeViewModel> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TopScrollingNavbar(
+                            fontSize: 26,
                             headingText: "All",
                             isSelected: viewModel.selectedItem == "All",
                             onTap: () => viewModel.setSelectedItem("All"),
                           ),
                           const SizedBox(width: 15),
                           TopScrollingNavbar(
+                            fontSize: 26,
                             headingText: "Nike",
                             isSelected: viewModel.selectedItem == "Nike",
                             onTap: () => viewModel.setSelectedItem("Nike"),
                           ),
                           const SizedBox(width: 15),
                           TopScrollingNavbar(
+                            fontSize: 26,
                             headingText: "Jordan",
                             isSelected: viewModel.selectedItem == "Jordan",
                             onTap: () => viewModel.setSelectedItem("Jordan"),
                           ),
                           const SizedBox(width: 15),
                           TopScrollingNavbar(
+                            fontSize: 26,
                             headingText: "Adidas",
                             isSelected: viewModel.selectedItem == "Adidas",
                             onTap: () => viewModel.setSelectedItem("Adidas"),
                           ),
                           const SizedBox(width: 15),
                           TopScrollingNavbar(
+                            fontSize: 26,
                             headingText: "Reebok",
                             isSelected: viewModel.selectedItem == "Reebok",
                             onTap: () => viewModel.setSelectedItem("Reebok"),

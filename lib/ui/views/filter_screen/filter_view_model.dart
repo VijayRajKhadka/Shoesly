@@ -1,17 +1,18 @@
 import 'package:stacked/stacked.dart';
 
 class FilterViewModel extends BaseViewModel {
-  // Define the filters as properties
-  String selectedBrand = 'NIKE';
-  double minPrice = 200;
-  double maxPrice = 1750;
-  String sortBy = 'Most recent';
+  String selectedBrand = 'Nike'; // Example initial brand
+  double minPrice = 400;
+  double maxPrice = 1300;
+  String sortBy = 'Most recent'; // Initial sort by criteria
+  String colorBy = 'White'; // Initial sort by criteria
   String gender = 'Man';
   String color = 'Black';
 
   // Add methods to update the filters
   void setSelectedBrand(String brand) {
     selectedBrand = brand;
+    print(brand);
     notifyListeners();
   }
 
@@ -23,11 +24,19 @@ class FilterViewModel extends BaseViewModel {
 
   void setSortBy(String sort) {
     sortBy = sort;
+    print(sort);
     notifyListeners();
   }
 
   void setGender(String selectedGender) {
     gender = selectedGender;
+    print(gender);
+    notifyListeners();
+  }
+
+  void setSortColor(String selectedColor) {
+    colorBy = selectedColor;
+    print(colorBy);
     notifyListeners();
   }
 
@@ -37,9 +46,9 @@ class FilterViewModel extends BaseViewModel {
   }
 
   void resetFilters() {
-    selectedBrand = 'NIKE';
-    minPrice = 200;
-    maxPrice = 1750;
+    selectedBrand = 'Nike';
+    minPrice = 400;
+    maxPrice = 1300;
     sortBy = 'Most recent';
     gender = 'Man';
     color = 'Black';

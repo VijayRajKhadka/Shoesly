@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1034866153066",
+    "project_id": "shoely-eadbb",
+    "storage_bucket": "shoely-eadbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034866153066:android:9ae77a5ab38e5071ff9c13",
+        "android_client_info": {
+          "package_name": "com.example.shoesly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmn-4HBelXMDpzUKHeOhacnpYe6RAEbjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

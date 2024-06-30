@@ -81,7 +81,7 @@ class CartAddedBottomSheet extends StatelessWidget {
                         border: Border.all(color: Colors.black12),
                       ),
                       child: TextButton(
-                        onPressed: (){},
+                        onPressed: _navigationService.navigateToCartView,
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white, padding: const EdgeInsets.all(13), // Text color
                           shape: RoundedRectangleBorder(
