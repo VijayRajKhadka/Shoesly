@@ -141,6 +141,7 @@ class ReviewView extends StackedView<ReviewViewModel> {
                                 date: (reviewData['reviewd_on'] as Timestamp)
                                     .toDate()
                                     .toString(),
+                                shoeRating: rating,
                               );
                             },
                           ),

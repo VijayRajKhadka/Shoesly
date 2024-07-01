@@ -55,7 +55,7 @@ class ShoeCard extends StatelessWidget {
               Text(rating.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
               const SizedBox(width: 5,),
 
-              Text("(1 Reviews)", style: TextStyle(color: Colors.grey, fontSize: 14),)
+              Text("(2 Reviews)", style: TextStyle(color: Colors.grey, fontSize: 14),)
             ],
 
           ),

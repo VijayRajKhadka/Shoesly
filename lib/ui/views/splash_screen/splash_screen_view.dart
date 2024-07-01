@@ -16,6 +16,7 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
       backgroundColor: Colors.white,
       body: TweenAnimationBuilder(
         tween: Tween<double>(begin: 0.5, end: 1.0),
+        //setting duration for 2 secs
         duration: const Duration(seconds: 2),
         curve: Curves.elasticIn,
         builder: (BuildContext context, double scale, Widget? child) {
@@ -35,6 +36,7 @@ class SplashScreenView extends StackedView<SplashScreenViewModel> {
   SplashScreenViewModel viewModelBuilder(BuildContext context) =>
       SplashScreenViewModel();
 
+  //overriding initializing method
   @override
   void onViewModelReady(SplashScreenViewModel viewModel) {
     viewModel.onStartApp();

@@ -7,7 +7,7 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-
+  //function for adding new shoes manually to firebase
   Future<void> addShoes()async {
     try {
 

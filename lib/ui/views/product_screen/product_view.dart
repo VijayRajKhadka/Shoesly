@@ -308,6 +308,7 @@ class ProductView extends StackedView<ProductViewModel> {
                                   date: (reviewData['reviewd_on'] as Timestamp)
                                       .toDate()
                                       .toString(),
+                                  shoeRating: shoeRating,
                                 );
                               },
                             ),

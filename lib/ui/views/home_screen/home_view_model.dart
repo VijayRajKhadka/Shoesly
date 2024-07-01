@@ -21,6 +21,7 @@ class HomeViewModel extends BaseViewModel {
   Map<String, double> _ratings = {};
   Map<String, double> get ratings => _ratings;
 
+  //getting shoe according to selected brand
   Stream<QuerySnapshot> get shoesStream {
     if (_selectedItem == "All") {
       return _firestore.collection('shoes').snapshots();
@@ -58,6 +59,7 @@ class HomeViewModel extends BaseViewModel {
     _navigationService.navigateToProductView(shoeModel: shoeModel,shoeRating: shoeRating);
   }
 
+  //calculating and fetching average rating from a specific product
   Future<double> fetchAverageRatingForShoe(String shoeId) async {
     try {
       final querySnapshot = await _firestore
@@ -92,7 +94,6 @@ class HomeViewModel extends BaseViewModel {
         final avgRating = await fetchAverageRatingForShoe(shoeId);
         _ratings[shoeId] = avgRating;
       }
-      notifyListeners();
     } catch (e) {
       print('Error fetching shoes: $e');
     }

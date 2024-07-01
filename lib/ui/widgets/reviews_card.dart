@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shoesly/core/helper/assets_helper.dart';
 import 'package:shoesly/core/helper/date_time_helper.dart';
 
 class ReviewsCard extends StatelessWidget {
@@ -7,8 +6,9 @@ class ReviewsCard extends StatelessWidget {
   final String userName;
   final String review;
   final String date;
+  final double shoeRating;
 
-  const ReviewsCard({Key? key, required this.userImageUrl, required this.userName, required this.review, required this.date}) : super(key: key);
+  const ReviewsCard({super.key, required this.userImageUrl, required this.userName, required this.review, required this.date, required this.shoeRating});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ReviewsCard extends StatelessWidget {
             radius: 28,
             child: Image.asset("assets/images/$userImageUrl"),
           ),
-          const SizedBox(width: 15), // Add space between CircleAvatar and Column
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,14 +40,21 @@ class ReviewsCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Icon(Icons.star_rounded, size: 20, color: Colors.orangeAccent),
-                    Icon(Icons.star_rounded, size: 20, color: Colors.orangeAccent),
-                    Icon(Icons.star_rounded, size: 20, color: Colors.orangeAccent),
-                    Icon(Icons.star_rounded, size: 20, color: Colors.orangeAccent),
-                    Icon(Icons.star_rounded, size: 20, color: Colors.orangeAccent),
+                    // Loop through a fixed number of total stars
+                    for (int i = 1; i <= 5; i++)
+                      Icon(
+                        // Using conditional logic to determine the star color
+                        i <= shoeRating
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        size: 20,
+                        color: i <= shoeRating
+                            ? Colors.orangeAccent
+                            : Colors.black12,
+                      ),
+
                   ],
                 ),
                 const SizedBox(height: 5), // Add space between rating and description

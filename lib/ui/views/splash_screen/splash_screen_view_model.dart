@@ -10,6 +10,7 @@ class SplashScreenViewModel extends BaseViewModel{
   void onStartApp() async {
     await Future.delayed(const Duration(milliseconds: 4000));
 
+    //clearing all stacks and routing to home page
     _navigationService.clearStackAndShow(Routes.homeView);
 
     }

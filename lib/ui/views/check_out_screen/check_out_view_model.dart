@@ -20,6 +20,7 @@ class CheckOutViewModel extends BaseViewModel {
     return snapshot;
   }
 
+  //logic for placing order
   Future<bool> placeOrder({
     required String brand,
     required String color,
@@ -48,6 +49,8 @@ class CheckOutViewModel extends BaseViewModel {
     }
   }
 
+
+  //clearing the cart collection after ordering shoe
   Future<void> deleteCollection() async {
     QuerySnapshot querySnapshot = await _firestore.collection('cart').get();
 

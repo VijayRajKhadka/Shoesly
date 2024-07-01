@@ -12,7 +12,7 @@ class ProductViewModel extends BaseViewModel {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-
+//getting top rated ratings
   Stream<QuerySnapshot> get topRatedReviewsStream {
     print("snapshot");
     final snapshot =  _firestore
@@ -23,6 +23,8 @@ class ProductViewModel extends BaseViewModel {
     print(snapshot);
     return snapshot;
   }
+
+  //logic to add product into cart
   Future<bool> addToCart({
     required String brand,
     required String color,

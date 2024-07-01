@@ -9,18 +9,20 @@ class CartViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<double> get grandTotalStream async* {
-    double grandTotal = 0;
 
-    await for (QuerySnapshot snapshot in _firestore.collection('cart').snapshots()) {
-      grandTotal = 0; // Reset grand total
-      for (var doc in snapshot.docs) {
-        grandTotal += doc['total_price'].toDouble();
-      }
-      yield grandTotal;
-    }
-  }
-
+  //getting grand total price
+  // Stream<double> get grandTotalStream async* {
+  //   double grandTotal = 0;
+  //
+  //   await for (QuerySnapshot snapshot in _firestore.collection('cart').snapshots()) {
+  //     grandTotal = 0; // Reset grand total
+  //     for (var doc in snapshot.docs) {
+  //       grandTotal += doc['total_price'].toDouble();
+  //     }
+  //     yield grandTotal;
+  //   }
+  // }
+  //updating quantity when changed
   Future<void> updateQuantity({
     required String cartItemId,
     required int newQuantity,
@@ -34,6 +36,7 @@ class CartViewModel extends BaseViewModel {
     }
   }
 
+  //getting cart details
   Stream<QuerySnapshot> get cart {
     print("snapshot");
     final snapshot =  _firestore
