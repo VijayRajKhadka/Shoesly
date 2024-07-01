@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
 import 'package:shoesly/ui/views/review_screen/review_view_model.dart';
@@ -6,7 +7,8 @@ import 'package:shoesly/ui/widgets/top_scrolling_navbar.dart';
 import 'package:stacked/stacked.dart';
 
 class ReviewView extends StackedView<ReviewViewModel> {
-  const ReviewView({super.key});
+  final double rating;
+  const ReviewView(this.rating, {super.key});
 
   @override
   Widget builder(BuildContext context, ReviewViewModel viewModel, Widget? child) {
@@ -18,7 +20,7 @@ class ReviewView extends StackedView<ReviewViewModel> {
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("Reviews (1045)", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
+        title: const Text("Reviews (1)", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
         leading: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: IconButton(
@@ -34,7 +36,7 @@ class ReviewView extends StackedView<ReviewViewModel> {
           Padding(
             padding: const EdgeInsets.only(right: 30.0),
             child: Text(
-              "4.5",
+              rating.toString(),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           )
@@ -56,85 +58,95 @@ class ReviewView extends StackedView<ReviewViewModel> {
                     TopScrollingNavbar(
                       fontSize: 23,
                       headingText: "All",
-                      isSelected: viewModel.selectedItem == "All",
-                      onTap: () => viewModel.setSelectedItem("All"),
+                      isSelected: viewModel.selectedItem == 1.0,
+                      onTap: () => viewModel.setSelectedItem(1.0),
                     ),
                     const SizedBox(width: 15),
                     TopScrollingNavbar(
                       fontSize: 23,
                       headingText: "5 Stars",
-                      isSelected: viewModel.selectedItem == "5 Stars",
-                      onTap: () => viewModel.setSelectedItem("5 Stars"),
+                      isSelected: viewModel.selectedItem == 5.0,
+                      onTap: () => viewModel.setSelectedItem(5.0),
                     ),
                     const SizedBox(width: 15),
                     TopScrollingNavbar(
                       fontSize: 23,
                       headingText: "4 Stars",
-                      isSelected: viewModel.selectedItem == "4 Stars",
-                      onTap: () => viewModel.setSelectedItem("4 Stars"),
+                      isSelected: viewModel.selectedItem == 4.0,
+                      onTap: () => viewModel.setSelectedItem(4.0),
                     ),
                     const SizedBox(width: 15),
                     TopScrollingNavbar(
                       headingText: "3 Stars",
                       fontSize: 23,
-                      isSelected: viewModel.selectedItem == "3 Stars",
-                      onTap: () => viewModel.setSelectedItem("3 Stars"),
+                      isSelected: viewModel.selectedItem == 3.0,
+                      onTap: () => viewModel.setSelectedItem(3.0),
                     ),
                     const SizedBox(width: 15),
                     TopScrollingNavbar(
                       fontSize: 23,
                       headingText: "2 Stars",
-                      isSelected: viewModel.selectedItem == "2 Stars",
-                      onTap: () => viewModel.setSelectedItem("2 Stars"),
+                      isSelected: viewModel.selectedItem == 2.0,
+                      onTap: () => viewModel.setSelectedItem(2.0),
                     ),
                     const SizedBox(width: 15),
                     TopScrollingNavbar(
                       fontSize: 23,
                       headingText: "1 Stars",
-                      isSelected: viewModel.selectedItem == "1 Stars",
-                      onTap: () => viewModel.setSelectedItem("1 Stars"),
+                      isSelected: viewModel.selectedItem == 1.0,
+                      onTap: () => viewModel.setSelectedItem(1.0),
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 30), // Adjust height as needed
-              const Expanded(
+               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: [
-                      ReviewsCard(
-                        userImageUrl: AssetsHelper.user1,
-                        userName: "Nolan Carder",
-                        review: "Perfect for keeping your feet dry and warm in damp conditions",
-                        date: "Today",
-                      ),
-                      ReviewsCard(
-                        userImageUrl: AssetsHelper.user1,
-                        userName: "Nolan Carder",
-                        review: "Perfect for keeping your feet dry and warm in damp conditions",
-                        date: "Today",
-                      ),
-                      ReviewsCard(
-                        userImageUrl: AssetsHelper.user1,
-                        userName: "Nolan Carder",
-                        review: "Perfect for keeping your feet dry and warm in damp conditions",
-                        date: "Today",
-                      ),
-                      ReviewsCard(
-                        userImageUrl: AssetsHelper.user1,
-                        userName: "Nolan Carder",
-                        review: "Perfect for keeping your feet dry and warm in damp conditions",
-                        date: "Today",
-                      ),
-                      ReviewsCard(
-                        userImageUrl: AssetsHelper.user1,
-                        userName: "Nolan Carder",
-                        review: "Perfect for keeping your feet dry and warm in damp conditions",
-                        date: "Today",
-                      ),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: viewModel.shoesStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                            child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                            child: Text('Error loading reviews'));
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('No reviews found'));
+                      }
+                      final reviews = snapshot.data!.docs;
+                      final totalReviews = reviews.length;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                    ],
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: reviews.length,
+                            itemBuilder: (context, index) {
+                              final reviewData = reviews[index].data()
+                              as Map<String, dynamic>;
+                              return ReviewsCard(
+                                userImageUrl: reviewData['user_image'],
+                                userName: reviewData['user_name'],
+                                review: reviewData['review'],
+                                date: (reviewData['reviewd_on'] as Timestamp)
+                                    .toDate()
+                                    .toString(),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

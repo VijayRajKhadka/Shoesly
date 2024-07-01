@@ -23,7 +23,23 @@ class ShoeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(imageUrl, width: screenWidth*0.4,),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30)
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+
+                child: Image.asset(
+                  width: screenWidth*0.4,
+                  "assets/images/$imageUrl",
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: 15,),
 
           Text(shoeName, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),  maxLines: 1, overflow: TextOverflow.ellipsis, ),
@@ -36,10 +52,10 @@ class ShoeCard extends StatelessWidget {
               const Icon(Icons.star_rounded, color: Colors.orangeAccent,size: 20,),
               const SizedBox(width: 2,),
 
-              Text(rating.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+              Text(rating.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
               const SizedBox(width: 5,),
 
-              Text("($reviews Reviews)", style: TextStyle(color: Colors.grey, fontSize: 14),)
+              Text("(1 Reviews)", style: TextStyle(color: Colors.grey, fontSize: 14),)
             ],
 
           ),

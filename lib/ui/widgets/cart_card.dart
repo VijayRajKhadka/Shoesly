@@ -3,8 +3,18 @@ import 'package:shoesly/core/helper/assets_helper.dart';
 
 class CartCard extends StatefulWidget {
   final VoidCallback onDismissed;
+  final String brand;
+  final String color;
+  final int quantity;
+  final String shoeName;
+  final int shoeSize;
+  final double totalPrice;
+  final String imageName;
+  final VoidCallback reduceQuantity;
+  final VoidCallback addQuantity;
 
-  const CartCard({super.key, required this.onDismissed});
+
+  const CartCard({super.key, required this.onDismissed, required this.brand, required this.color, required this.quantity, required this.shoeName, required this.shoeSize, required this.totalPrice, required this.imageName, required this.reduceQuantity, required this.addQuantity});
 
   @override
   State<CartCard> createState() => _CartCardState();
@@ -64,7 +74,7 @@ class _CartCardState extends State<CartCard> {
                   SizedBox(
                     width: screenWidth * 0.23,
                     height: screenHeight * 0.11,
-                    child: Image.asset(AssetsHelper.jordanImage),
+                    child: Image.asset("assets/images/${widget.imageName}"),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -72,26 +82,26 @@ class _CartCardState extends State<CartCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Jordan High Hels Dye Shoes this is gr",
+                          widget.shoeName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 8),
-                        Text("Nike.Red Grey.42", style: TextStyle(color: Colors.grey)),
+                        Text("${widget.brand}. ${widget.color}. ${widget.shoeSize}", style: TextStyle(color: Colors.grey)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("\$235.00", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text("\$${widget.totalPrice*widget.quantity}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             Row(
                               children: [
                                 IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.remove_circle_outline, size: 25, color: Colors.grey),
+                                  onPressed: widget.reduceQuantity,
+                                  icon:  Icon(Icons.remove_circle_outline, size: 25, color: widget.quantity>=2?null:Colors.grey),
                                 ),
-                                const Text("1", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                Text(widget.quantity.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: widget.addQuantity,
                                   icon: const Icon(Icons.add_circle_outline_sharp, size: 25),
                                 ),
                               ],

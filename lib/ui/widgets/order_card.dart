@@ -7,8 +7,9 @@ class OrderCard extends StatelessWidget {
   final int size;
   final String color;
   final int qty;
+  final double price;
 
-  const OrderCard({super.key, required this.shoeName, required this.brand, required this.color, required this.qty, required this.size});
+  const OrderCard({super.key, required this.shoeName, required this.brand, required this.color, required this.qty, required this.size, required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class OrderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("$brand. $color. $size. Qty $qty", style: TextStyle(color: Colors.black45),),
-              Text("\$235.00", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+              Text("\$${qty*price}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
 
             ],
           )

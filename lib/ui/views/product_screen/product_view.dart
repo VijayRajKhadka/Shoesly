@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
@@ -8,12 +11,42 @@ import 'package:shoesly/ui/widgets/cart_added_bottom_sheet.dart';
 import 'package:shoesly/ui/widgets/reviews_card.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../../model/shoe_model.dart';
 import '../../widgets/see_all_review_button.dart';
 import '../../widgets/shoe_color_pick_avatar.dart';
 import '../../widgets/shoe_size_circular_avatar.dart';
 
 class ProductView extends StackedView<ProductViewModel> {
-  const ProductView({super.key});
+  final Shoe shoeModel;
+  final double shoeRating;
+
+  const ProductView(this.shoeRating, {super.key, required this.shoeModel});
+
+  Future<bool> addToCart({
+    required String brand,
+    required String color,
+    required double price,
+    required int quantity,
+    required String shoeName,
+    required int size,
+    required String imageName,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('cart').add({
+        'brand': brand,
+        'color': color,
+        'total_price': price,
+        'quantity': quantity,
+        'shoe_name': shoeName,
+        'size': size,
+        'imageName': imageName
+      });
+      return true; // Success
+    } catch (e) {
+      print('Error adding to cart: $e');
+      return false; // Failure
+    }
+  }
 
   @override
   Widget builder(
@@ -22,7 +55,6 @@ class ProductView extends StackedView<ProductViewModel> {
     final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         leading: Padding(
           padding: const EdgeInsets.only(left: 20.0),
@@ -63,16 +95,25 @@ class ProductView extends StackedView<ProductViewModel> {
                       height: screenHeight * 0.38,
                       child: Stack(
                         children: [
-                          Image.asset(
-                            AssetsHelper.jordanImage,
-                            fit: BoxFit.fill,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset(
+                                "assets/images/${shoeModel.imageUrl}",
+                                width: screenWidth,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
                           ),
                           Positioned(
                             bottom: 10,
                             right: 20,
                             child: Container(
                               padding: const EdgeInsets.all(8),
-                              // Adjust padding as needed
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(30),
@@ -84,30 +125,29 @@ class ProductView extends StackedView<ProductViewModel> {
                                   ShoeColorPickAvatar(
                                     color: Colors.white,
                                     isSelected:
-                                        viewModel.selectedColor == Colors.white,
+                                        viewModel.selectedColor == "White",
                                     onTap: () =>
-                                        viewModel.selectColor(Colors.white),
+                                        viewModel.selectColor("White"),
                                   ),
                                   ShoeColorPickAvatar(
                                     color: Colors.black,
                                     isSelected:
-                                        viewModel.selectedColor == Colors.black,
+                                        viewModel.selectedColor == "Black",
                                     onTap: () =>
-                                        viewModel.selectColor(Colors.black),
+                                        viewModel.selectColor("Black"),
                                   ),
                                   ShoeColorPickAvatar(
                                     color: Colors.green,
                                     isSelected:
-                                        viewModel.selectedColor == Colors.green,
+                                        viewModel.selectedColor == "Green",
                                     onTap: () =>
-                                        viewModel.selectColor(Colors.green),
+                                        viewModel.selectColor("Green"),
                                   ),
                                   ShoeColorPickAvatar(
                                     color: Colors.blueAccent,
-                                    isSelected: viewModel.selectedColor ==
-                                        Colors.blueAccent,
+                                    isSelected: viewModel.selectedColor =="Blue",
                                     onTap: () => viewModel
-                                        .selectColor(Colors.blueAccent),
+                                        .selectColor("Blue"),
                                   ),
                                 ],
                               ),
@@ -116,54 +156,39 @@ class ProductView extends StackedView<ProductViewModel> {
                         ],
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: Text(
-                        "Jordan 1 Retro High Tie Dye",
-                        style: TextStyle(
+                        shoeModel.name.toString(),
+                        style: const TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 19),
                       ),
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 20,
-                          color: Colors.orangeAccent,
-                        ),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 20,
-                          color: Colors.orangeAccent,
-                        ),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 20,
-                          color: Colors.orangeAccent,
-                        ),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 20,
-                          color: Colors.orangeAccent,
-                        ),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 20,
-                          color: Colors.black12,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
+                        // Loop through a fixed number of total stars (5 in this case)
+                        for (int i = 1; i <= 5; i++)
+                          Icon(
+                            // Use conditional logic to determine the star color (filled or empty)
+                            i <= shoeRating
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            size: 20,
+                            color: i <= shoeRating
+                                ? Colors.orangeAccent
+                                : Colors.black12,
+                          ),
+                        const SizedBox(width: 5),
                         Text(
-                          "4.5",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          shoeRating.toString(),
+                          // Display the actual rating value
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         Text(
-                          "(1045 Reviews)",
-                          style: TextStyle(color: Colors.grey),
+                          "(${shoeModel.rating.toString()} Reviews)",
+                          // Display the number of reviews
+                          style: const TextStyle(color: Colors.grey),
                         )
                       ],
                     ),
@@ -222,12 +247,12 @@ class ProductView extends StackedView<ProductViewModel> {
                             color: Colors.black87),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 30),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 30),
                       child: Text(
-                        "Engineered to crush any movement-based workout, these On sneakers enhance the label's original Cloudl sneaker with cutting-edge technologies for a pair",
+                        shoeModel.description,
                         textAlign: TextAlign.justify,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
                             color: Colors.grey),
@@ -236,45 +261,63 @@ class ProductView extends StackedView<ProductViewModel> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        "Reviews (1045)",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            color: Colors.black87),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const ReviewsCard(
-                      userImageUrl: AssetsHelper.user1,
-                      userName: "Nolan Carder",
-                      review:
-                          "Perfect for keeping your feet dry and warm in damp conditions",
-                      date: "Today",
-                    ),
-                    const ReviewsCard(
-                      userImageUrl: AssetsHelper.user1,
-                      userName: "Nolan Carder",
-                      review:
-                          "Perfect for keeping your feet dry and warm in damp conditions",
-                      date: "Today",
-                    ),
-                    const ReviewsCard(
-                      userImageUrl: AssetsHelper.user1,
-                      userName: "Nolan Carder",
-                      review:
-                          "Perfect for keeping your feet dry and warm in damp conditions",
-                      date: "Today",
-                    ),
-                    SeeAllReviewButton(
-                      onPressed: () {
-                        // Example usage of SeeAllReviewButton onPressed callback
-                        viewModel
-                            .seeAllReviews(); // Corrected viewModel method call
+                    StreamBuilder<QuerySnapshot>(
+                      stream: viewModel.topRatedReviewsStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                              child: Text('Error loading reviews'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No reviews found'));
+                        }
+                        final reviews = snapshot.data!.docs;
+                        final totalReviews = reviews.length;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                "Reviews ($totalReviews)",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                    color: Colors.black87),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: reviews.length,
+                              itemBuilder: (context, index) {
+                                final reviewData = reviews[index].data()
+                                    as Map<String, dynamic>;
+                                return ReviewsCard(
+                                  userImageUrl: reviewData['user_image'],
+                                  userName: reviewData['user_name'],
+                                  review: reviewData['review'],
+                                  date: (reviewData['reviewd_on'] as Timestamp)
+                                      .toDate()
+                                      .toString(),
+                                );
+                              },
+                            ),
+                            SeeAllReviewButton(
+                              onPressed: () {
+                                viewModel.seeAllReviews(shoeRating);
+                              },
+                            ),
+                          ],
+                        );
                       },
                     ),
                     const SizedBox(
@@ -287,29 +330,51 @@ class ProductView extends StackedView<ProductViewModel> {
           ),
           BottomBar(
             title: "Price",
-            price: 235.00,
+            price: shoeModel.price,
             buttonName: "ADD TO CART",
             buttonFunction: () async {
               var result = await showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
-                  return const AddToCartBottomSheet(price: 235.00);
+                  return AddToCartBottomSheet(price: shoeModel.price);
                 },
               );
 
-              if (result != null) {
-                print(viewModel.selectedColor);
-                print(viewModel.selectedSize);
-                print('Result from bottom sheet: $result');
-                showModalBottomSheet(
+              if (result != null && result is Map<String, dynamic>) {
+                bool addToCartResult = await addToCart(
+                  brand: shoeModel.brand,
+                  color: viewModel.selectedColor,
+                  price: shoeModel.price,
+                  quantity: result['quantity'],
+                  shoeName: shoeModel.name,
+                  size: viewModel.selectedSize,
+                  imageName: shoeModel.imageUrl,
+                );
+                print(addToCartResult);
+                if (addToCartResult) {
+                  showModalBottomSheet(
                   context: context,
-                  builder: (BuildContext context) {
-                    return CartAddedBottomSheet(qty: result['quantity']);
-                  },
+                  builder: (BuildContext context) {return CartAddedBottomSheet(qty: result['quantity']);},
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Failed to add to cart.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Cancelled or error in bottom sheet.'),
+                    backgroundColor: Colors.grey,
+                  ),
                 );
               }
             },
-          )
+          ),
+
         ],
       ),
     );

@@ -8,6 +8,8 @@ import 'package:shoesly/ui/views/splash_screen/splash_screen_view.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 
+import '../services/shoeServices.dart';
+
 
 @StackedApp(
     routes: [
@@ -25,6 +27,7 @@ import 'package:stacked_services/stacked_services.dart';
     ],
     dependencies: [
       Singleton(classType: NavigationService),
+      Singleton(classType: FirestoreService)
 
 
     ]

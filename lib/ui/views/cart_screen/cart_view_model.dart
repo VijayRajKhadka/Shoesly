@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shoesly/app/app.router.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -5,14 +6,46 @@ import 'package:stacked_services/stacked_services.dart';
 import '../../../app/app.locator.dart';
 
 class CartViewModel extends BaseViewModel {
-  List<CartItem> _cartItems = [];
   final NavigationService _navigationService = locator<NavigationService>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  List<CartItem> get cartItems => _cartItems;
+  Stream<double> get grandTotalStream async* {
+    double grandTotal = 0;
+
+    await for (QuerySnapshot snapshot in _firestore.collection('cart').snapshots()) {
+      grandTotal = 0; // Reset grand total
+      for (var doc in snapshot.docs) {
+        grandTotal += doc['total_price'].toDouble();
+      }
+      yield grandTotal;
+    }
+  }
+
+  Future<void> updateQuantity({
+    required String cartItemId,
+    required int newQuantity,
+  }) async {
+    try {
+      await _firestore.collection('cart').doc(cartItemId).update({
+        'quantity': newQuantity,
+      });
+    } catch (e) {
+      print('Error updating quantity: $e');
+    }
+  }
+
+  Stream<QuerySnapshot> get cart {
+    print("snapshot");
+    final snapshot =  _firestore
+        .collection('cart')
+        .snapshots();
+    print(snapshot);
+    return snapshot;
+  }
+
 
   void removeItem(CartItem item) {
-    _cartItems.remove(item);
-    notifyListeners();
+
   }
   void goToCheckOut(){
   _navigationService.navigateToCheckOutView();

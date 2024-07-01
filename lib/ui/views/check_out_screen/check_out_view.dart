@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
@@ -32,126 +33,233 @@ class CheckOutView extends StackedView<CheckOutViewModel> {
           ),
         ),
       ),
-      body: Stack(
-        children: [SingleChildScrollView(
-
-           child:  Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Information",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 10),
-                  OptionCard(
-                    title: "Payment Method",
-                    subTitle:
-                        viewModel.selectedPaymentMethod ?? "Choose a method",
-                    cardFunction: () =>
-                        _showPaymentMethodDialog(context, viewModel),
-                  ),
-                  const SizedBox(height: 10),
-                  const Divider(thickness: 0.2, color: Colors.grey),
-                  OptionCard(
-                    title: "Location",
-                    subTitle: viewModel.selectedLocation ?? "Set a location",
-                    cardFunction: () =>
-                        _showLocationSelectionDialog(context, viewModel),
-                  ),
-                  const SizedBox(height: 30),
-                  const Text("Order Details",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 20),
-                  const OrderCard(
-                      shoeName: "Jordan 1 Retro High Tie Dye",
-                      brand: "Nike",
-                      color: "Red Grey",
-                      qty: 40,
-                      size: 1),
-                  const OrderCard(
-                      shoeName: "Jordan 1 Retro High Tie Dye",
-                      brand: "Nike",
-                      color: "Red Grey",
-                      qty: 40,
-                      size: 1),
-                  const OrderCard(
-                      shoeName: "Jordan 1 Retro High Tie Dye",
-                      brand: "Nike",
-                      color: "Red Grey",
-                      qty: 40,
-                      size: 1),
-                  const SizedBox(height: 20),
-                  const Text("Payment Details",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 20),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Sub Total",
-                          style: TextStyle(color: Colors.black54, fontSize: 14)),
-                      Text("\$705.00",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Shipping",
-                          style: TextStyle(color: Colors.black54, fontSize: 14)),
-                      Text("\$20.00",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(thickness: 0.2, color: Colors.grey),
-                  const SizedBox(height: 20),
-
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Total Order",
-                          style: TextStyle(color: Colors.black54, fontSize: 14)),
-                      Text("\$725.00",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ],
-
-                  ),
-                  const SizedBox(height: 120),
-
-                ],
-              ),
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Information",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 10),
+                OptionCard(
+                  title: "Payment Method",
+                  subTitle:
+                      viewModel.selectedPaymentMethod ?? "Choose a method",
+                  cardFunction: () =>
+                      _showPaymentMethodDialog(context, viewModel),
+                ),
+                const SizedBox(height: 10),
+                const Divider(thickness: 0.2, color: Colors.grey),
+                OptionCard(
+                  title: "Location",
+                  subTitle: viewModel.selectedLocation ?? "Set a location",
+                  cardFunction: () =>
+                      _showLocationSelectionDialog(context, viewModel),
+                ),
+                const SizedBox(height: 30),
+                const Text("Order Details",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
+                StreamBuilder<QuerySnapshot>(
+                  stream: viewModel.cartItems,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(child: Text('Error loading cart'));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(child: Text('No cart found'));
+                    }
+                    final cartItems = snapshot.data!.docs;
+                    final totalCart = cartItems.length;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: cartItems.length,
+                          itemBuilder: (context, index) {
+                            final cartData =
+                                cartItems[index].data() as Map<String, dynamic>;
+                            return OrderCard(
+                                shoeName: cartData['shoe_name'],
+                                brand: cartData['brand'],
+                                color: cartData['color'],
+                                qty: cartData['quantity'],
+                                size: cartData['size'],
+                                price: cartData['total_price']);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Text("Payment Details",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Sub Total",
+                        style: TextStyle(color: Colors.black54, fontSize: 14)),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: viewModel.cartItems,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                              child: Text('Error loading cart'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No cart found'));
+                        }
+                        final cartItems = snapshot.data!.docs;
+                        double price = 0;
+                        for (var item in cartItems) {
+                          price += (item['total_price'] * item['quantity']);
+                        }
+                        return Text("\$$price",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold));
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Shipping",
+                        style: TextStyle(color: Colors.black54, fontSize: 14)),
+                    Text("\$20.00",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Divider(thickness: 0.2, color: Colors.grey),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Total Order",
+                        style: TextStyle(color: Colors.black54, fontSize: 14)),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: viewModel.cartItems,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                              child: Text('Error loading cart'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No cart found'));
+                        }
+                        final cartItems = snapshot.data!.docs;
+                        double price = 0;
+                        for (var item in cartItems) {
+                          price += (item['total_price'] * item['quantity']);
+                        }
+                        return Text("\$${price + 20}",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold));
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 120),
+              ],
             ),
-
-
+          ),
         ),
-          BottomBar(
-            title: "Grand Total",
-            price: 725.00,
-            buttonName: "PAYMENT",
-            buttonFunction: ()async {
-              await showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return PaymentDoneBottomSheet();
-                },
-              );
-            },
-          ),]
-      ),
+        StreamBuilder<QuerySnapshot>(
+          stream: viewModel.cartItems,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading cart'));
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No cart found'));
+            }
+            final cartItems = snapshot.data!.docs;
+            double price = 0;
+            for (var item in cartItems) {
+              price += (item['total_price'] * item['quantity']);
+            }
+            return BottomBar(
+              title: "Grand Total",
+              price: price + 20,
+              buttonName: "PAYMENT",
+              buttonFunction: () async {
+                bool doneOrder= false;
+                for( var item in cartItems){
+                  bool result= await viewModel.placeOrder(
+                      brand: item['brand'],
+                      color: item['color'],
+                      price: item['total_price'],
+                      quantity: item['quantity'],
+                      shoeName: item['shoe_name'],
+                      size: item['size'],
+                      location: viewModel.locationEditor.text,
+                      paymentMethod: viewModel.selectedPaymentMethod.toString());
+                  if(result){
+                    doneOrder=true;
+                  }else{
+                    doneOrder=false;
+                    break;
+                  }
+                }
+                if(doneOrder){
+                viewModel.deleteCollection();
+                await showModalBottomSheet(
+                  enableDrag: false,
+                  isDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PaymentDoneBottomSheet();
+                  },
+                );}
+
+                else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Failed to place all Order.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            );
+          },
+        ),
+      ]),
     );
   }
 
@@ -253,6 +361,7 @@ class CheckOutView extends StackedView<CheckOutViewModel> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: viewModel.locationEditor,
                     decoration: InputDecoration(
                       hintText: 'Enter Location',
                       border: InputBorder.none,

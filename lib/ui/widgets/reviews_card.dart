@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoesly/core/helper/assets_helper.dart';
+import 'package:shoesly/core/helper/date_time_helper.dart';
 
 class ReviewsCard extends StatelessWidget {
   final String userImageUrl;
@@ -19,7 +20,7 @@ class ReviewsCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28,
-            child: Image.asset(userImageUrl),
+            child: Image.asset("assets/images/$userImageUrl"),
           ),
           const SizedBox(width: 15), // Add space between CircleAvatar and Column
           Expanded(
@@ -35,7 +36,7 @@ class ReviewsCard extends StatelessWidget {
                         userName,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                       ),
-                      Text(date, style: const TextStyle(color: Colors.grey),)
+                      Text(DateTimeHelper.timeAgo(date), style: const TextStyle(color: Colors.grey),)
                     ],
                   ),
                 ),

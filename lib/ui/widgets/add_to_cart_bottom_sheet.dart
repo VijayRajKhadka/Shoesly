@@ -1,9 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import '../../model/shoe_model.dart';
+import 'cart_added_bottom_sheet.dart';
 
 class AddToCartBottomSheet extends StatefulWidget {
   final double price;
 
-  const AddToCartBottomSheet({Key? key, required this.price}) : super(key: key);
+
+
+  const AddToCartBottomSheet({super.key, required this.price });
 
   @override
   _AddToCartBottomSheetState createState() => _AddToCartBottomSheetState();
@@ -12,6 +18,7 @@ class AddToCartBottomSheet extends StatefulWidget {
 class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
   int quantity = 1;
   late TextEditingController _controller;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -51,9 +58,35 @@ class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
         // If the new quantity is not valid, reset the TextField to the current quantity
         _controller.text = quantity.toString();
       }
+
+    }
+
+
+
+  }
+  Future<bool> addToCart({
+    required String brand,
+    required String color,
+    required double price,
+    required int quantity,
+    required String shoeName,
+    required int size,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('cart').add({
+        'brand': brand,
+        'color': color,
+        'total_price': price,
+        'quantity': quantity,
+        'shoe_name': shoeName,
+        'size': size,
+      });
+      return true; // Success
+    } catch (e) {
+      print('Error adding to cart: $e');
+      return false; // Failure
     }
   }
-
   @override
   Widget build(BuildContext context) {
     double totalPrice = widget.price * quantity;
@@ -155,8 +188,9 @@ class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop({'quantity': quantity, 'totalPrice': totalPrice});
+                    onPressed: () async{
+                      Navigator.of(context).pop({"quantity": quantity, "totalPrice": totalPrice});
+
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,

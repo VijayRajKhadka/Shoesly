@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shoesly/ui/views/home_screen/home_view_model.dart';
@@ -5,6 +7,9 @@ import 'package:shoesly/ui/widgets/filter_button.dart';
 import 'package:shoesly/ui/widgets/shoe_card.dart';
 import 'package:shoesly/ui/widgets/top_scrolling_navbar.dart';
 import 'package:stacked/stacked.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../model/shoe_model.dart';
 
 class HomeView extends StackedView<HomeViewModel> {
   const HomeView({super.key});
@@ -15,7 +20,10 @@ class HomeView extends StackedView<HomeViewModel> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(surfaceTintColor: Colors.white,backgroundColor: Colors.white,),
+      appBar: AppBar(
+        surfaceTintColor: Colors.white,
+        backgroundColor: Colors.white,
+      ),
       body: Container(
         color: Colors.white,
         child: Stack(
@@ -89,68 +97,55 @@ class HomeView extends StackedView<HomeViewModel> {
                     ),
                   ),
                   Expanded(
-                    child: NotificationListener<UserScrollNotification>(
-                      onNotification: (notification) {
-                        if (notification.direction == ScrollDirection.forward) {
-                          viewModel.showFilterButton();
-                        } else if (notification.direction == ScrollDirection.reverse) {
-                          viewModel.hideFilterButton();
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: viewModel.shoesStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
                         }
-                        return true;
-                      },
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 0.62,
-                        children: [
-                          InkWell(
-                            onTap :viewModel.goToProduct,
-                            child: ShoeCard(
-                              shoeName: "Jordan 1 Retro High Tie Dye",
-                              rating: 4.50,
-                              price: 256.00,
-                              imageUrl: "assets/images/jordan.png",
-                              reviews: 1045,
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading shoes'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No shoes found'));
+                        }
+                        final shoes = snapshot.data!.docs;
+                        return NotificationListener<UserScrollNotification>(
+                          onNotification: (notification) {
+                            if (notification.direction == ScrollDirection.forward) {
+                              viewModel.showFilterButton();
+                            } else if (notification.direction == ScrollDirection.reverse) {
+                              viewModel.hideFilterButton();
+                            }
+                            return true;
+                          },
+                          child: GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 0.62,
                             ),
+                            itemCount: shoes.length,
+                            itemBuilder: (context, index) {
+                              final shoeData = shoes[index].data() as Map<String, dynamic>;
+                              final shoeModel = Shoe.fromMap(shoeData);
+                              final  rating= viewModel.ratings[shoes[index].id] ?? 0.0;
+                              print(rating);
+                              return InkWell(
+                                onTap: () => viewModel.goToProduct(shoeModel, rating),
+                                child: ShoeCard(
+                                  shoeName: shoeModel.name,
+                                  rating: rating,
+                                  price: shoeModel.price,
+                                  imageUrl: shoeModel.imageUrl,
+                                  reviews: shoeModel.reviews,
+                                ),
+                              );
+                            },
                           ),
-                          ShoeCard(
-                            shoeName: "Jordan 1 Retro High Tie Dye",
-                            rating: 4.50,
-                            price: 256.00,
-                            imageUrl: "assets/images/jordan.png",
-                            reviews: 1045,
-                          ),
-                          ShoeCard(
-                            shoeName: "Jordan 1 Retro High Tie Dye",
-                            rating: 4.50,
-                            price: 256.00,
-                            imageUrl: "assets/images/jordan.png",
-                            reviews: 1045,
-                          ),
-                          ShoeCard(
-                            shoeName: "Jordan 1 Retro High Tie Dye",
-                            rating: 4.50,
-                            price: 256.00,
-                            imageUrl: "assets/images/jordan.png",
-                            reviews: 1045,
-                          ),
-                          ShoeCard(
-                            shoeName: "Jordan 1 Retro High Tie Dye",
-                            rating: 4.50,
-                            price: 256.00,
-                            imageUrl: "assets/images/jordan.png",
-                            reviews: 1045,
-                          ),
-                          ShoeCard(
-                            shoeName: "Jordan 1 Retro High Tie Dye",
-                            rating: 4.50,
-                            price: 256.00,
-                            imageUrl: "assets/images/jordan.png",
-                            reviews: 1045,
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -164,7 +159,7 @@ class HomeView extends StackedView<HomeViewModel> {
                 alignment: Alignment.bottomCenter,
                 child: AnimatedOpacity(
                   opacity: viewModel.isFilterButtonVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 100),
                   child: FilterButton(),
                 ),
               ),
@@ -177,4 +172,10 @@ class HomeView extends StackedView<HomeViewModel> {
 
   @override
   HomeViewModel viewModelBuilder(BuildContext context) => HomeViewModel();
+
+  @override
+  void onViewModelReady(HomeViewModel viewModel) {
+    viewModel.fetchRatingsForShoes();
+    super.onViewModelReady(viewModel);
+  }
 }
